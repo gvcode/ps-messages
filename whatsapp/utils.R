@@ -26,7 +26,7 @@ write_whats_url <- function(NomeCompleto, Celular, ..., create_content){
     str_replace_all(" ", "%20") #substituir espaços pelo símbolo de espaço para URLs
   
   # Printar o link no console:
-  cat(NomeCompleto, sep = "\n")
+  cat(paste0("=> ", NomeCompleto), sep = "\n")
   cat(paste0("https://api.whatsapp.com/send?phone=", Celular, text, "\n\n"))
 }
 # A função gera uma lista de links. Cole-os no browser. Você será redirecionado
