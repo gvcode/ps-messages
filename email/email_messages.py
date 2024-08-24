@@ -4,6 +4,12 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+def format_carteira(carteiras):
+    def match_and_format(carteira):
+        match = re.match(r'(C|B)?([0-9]{6})', carteira).group(0)
+        return match if len(match) == 7 else f'C{match}'
+    return pd.Series(carteiras).apply(match_and_format).tolist()
+
 def get_html(html_path):
     with open(html_path, encoding='utf-8') as file:
         return file.read()
@@ -28,7 +34,6 @@ def main(df, html_path, email_column, subject, from_mail, from_password):
 
     for _, row in df.iterrows():
         email = row[email_column]
-        row.drop(email_column)
 
         for var in vars:
             html.replace(f"%{var}%", row[var])
@@ -40,14 +45,18 @@ def main(df, html_path, email_column, subject, from_mail, from_password):
 from_mail ="gvcode.head@gmail.com"
 from_password = 'yjvhecubcjrsqqwz'
 
+path_main = "data/PS 2024.2 - Inscrição - test.xlsx" #remover '- test'
+path_test = "data/PS 2024.2 - Programação - test.xlsx" #remover '- test'
+
 # Data:
-df_main = pd.read_excel("data/PS 2024.2 - Inscrição.xlsx", "Form1")
+df_main = pd.read_excel(path_main, "Form1")
+df_main['Carteira'] = format_carteira(df_main['Carteira'])
 df_main = df_main[['Carteira', 'Celular', 'EmailContato']].drop_duplicates(subset='Carteira')
 
-df_alloc = pd.read_excel("data/PS 2024.2 - Inscrição.xlsx", "Alocação")
+df_alloc = pd.read_excel(path_main, "Alocação")
 df_alloc = df_alloc.merge(df_main, on="Carteira", how="left")
 
-df_grades = pd.read_excel("data/PS 2024.2 - Inscrição.xlsx", "Notas")
+df_grades = pd.read_excel(path_main, "Notas")
 df_grades = df_grades.merge(df_main, on="Carteira", how="left")
 
 
@@ -60,18 +69,28 @@ main(
 # Emails de resultado. Cuidado para apenas rodar após já terem atualizado a coluna de Status,
 #   e escolher corretamente o html "phaseX_approved":
 main(
-    df_grades.query('StatusDinâmica == "Ativo"'), "email/phase1_approved.html",
-    email_column="EmailContato", subject="teste", from_mail=from_mail, from_password=from_password
-)
-main(
-    df_grades.query('StatusCase == "Ativo"'), "email/phase2_approved.html",
-    email_column="EmailContato", subject="teste", from_mail=from_mail, from_password=from_password
-)
-main(
-    df_grades.query('StatusEntrevista == "Ativo"'), "email/phase3_approved.html",
+    df_grades.query('StatusDinâmica == "Aprovado"'), "email/phase1_approved.html",
     email_column="EmailContato", subject="teste", from_mail=from_mail, from_password=from_password
 )
 main(
     df_grades.query('StatusDinâmica == "Reprovado"'), "email/rejected.html",
+    email_column="EmailContato", subject="teste", from_mail=from_mail, from_password=from_password
+)
+
+main(
+    df_grades.query('StatusCase == "Aprovado"'), "email/phase2_approved.html",
+    email_column="EmailContato", subject="teste", from_mail=from_mail, from_password=from_password
+)
+main(
+    df_grades.query('StatusCase == "Reprovado"'), "email/rejected.html",
+    email_column="EmailContato", subject="teste", from_mail=from_mail, from_password=from_password
+)
+
+main(
+    df_grades.query('StatusEntrevista == "Aprovado"'), "email/phase3_approved.html",
+    email_column="EmailContato", subject="teste", from_mail=from_mail, from_password=from_password
+)
+main(
+    df_grades.query('StatusEntrevista == "Reprovado"'), "email/rejected.html",
     email_column="EmailContato", subject="teste", from_mail=from_mail, from_password=from_password
 )
