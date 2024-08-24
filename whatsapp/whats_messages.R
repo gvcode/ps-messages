@@ -18,19 +18,26 @@ source("whatsapp/utils.R")
 #   permissão do administrador da FGV. Atualemente, baixe os dados na pasta
 #   "data/".
 
-data_main <- read_excel("data/PS 2024.2 - Inscrição.xlsx", "Form1") %>%
+path_main <- "data/PS 2024.2 - Inscrição - test.xlsx" #remover '- test'
+path_test <- "data/Case 2024.2 - Programação - test.xlsx" #remover '- test'
+
+data_main <- read_excel(path_main, "Form1") %>%
   select(Carteira, Celular, EmailContato) %>%
-  mutate(Celular = format_cel(Celular)) %>%
+  mutate(
+    Celular = format_cel(Celular),
+    Carteira = format_carteira(Carteira),
+    Email = format_email(EmailContato)
+  ) %>%
   filter(!duplicated(Carteira))
 
-data_alloc <- read_excel("data/PS 2024.2 - Inscrição.xlsx", "Alocação") %>%
-  mutate(HorárioID = id_unique(Horário)) %>% #criar coluna para criar links por partes
+data_alloc <- read_excel(path_main, "Alocação") %>%
+  mutate(HorárioID = id_unique(`Horário`)) %>% #criar coluna para criar links por partes
   left_join(data_main, by = "Carteira")
 
-data_grades <- read_excel("data/PS 2024.2 - Inscrição.xlsx", "Notas") %>%
+data_grades <- read_excel(path_main, "Notas") %>%
   left_join(data_main, by = "Carteira")
 
-data_test <- read_excel("data/Case 2024.2 - Programação.xlsx", "Sheet1") %>%
+data_test <- read_excel(path_test, "Sheet1") %>%
   filter(!duplicated(Carteira)) %>%
   select(Carteira)
 

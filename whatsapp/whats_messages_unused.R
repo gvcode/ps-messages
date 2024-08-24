@@ -1,3 +1,12 @@
+# Função para transformar celulares padronizados em um formato mais legível
+prettify_cel <- function(cels) {
+  cels %>% 
+    substr(3, 13) %>%
+    gsub("([0-9]{2})(9*[0-9]{4})([0-9]{4})", "\\1 \\2-\\3", .)
+}
+
+
+
 # Phase 1 Allocation ------------------------------------------------------
 
 # Definir links diferentes para dinâmicas que ocorrem ao mesmo tempo:

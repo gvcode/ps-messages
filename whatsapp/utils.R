@@ -7,12 +7,16 @@ format_cel <- function(cels){
     paste0("55", .) #adicionar o 55 Brasil no começo
 }
 
+# Função para restringir carteiras no formato padronizado
+format_carteira <- function(carteiras) {
+  str_match(carteiras, "(C|B)?([0-9]{6})") %>%
+    `[`(,1) %>%
+    {ifelse(nchar(.) == 6, paste0("C", .), .)}
+}
 
-# Função para transformar celulares padronizados em um formato mais legível
-prettify_cel <- function(cels) {
-  cels %>% 
-    substr(3, 13) %>%
-    gsub("([0-9]{2})(9*[0-9]{4})([0-9]{4})", "\\1 \\2-\\3", .)
+# Função para restringir emails no formato padronizado
+format_email <- function(emails) {
+  str_to_lower(emails)
 }
 
 
