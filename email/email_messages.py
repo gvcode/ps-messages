@@ -29,12 +29,20 @@ def enviar_email(email, html, subject, from_mail, from_password):
         server.sendmail(from_mail, email, mensagem.as_string())
 
 def main(df, html_path, email_column, subject, from_mail, from_password):
-    html = get_html(html_path)
-    vars = re.findall(r'%(\w+)%', html)
+    html = [
+        get_html(re.sub(r"^(.+)(\.html)$", r"\1_gmail\2", html_path)),
+        get_html(re.sub(r"^(.+)(\.html)$", r"\1_outlook\2", html_path))
+    ]
+
+    vars = re.findall(r'%(\w+)%', html[0])
 
     for _, row in df.iterrows():
-        html_row = html
         email = row[email_column]
+
+        if re.search("gmail", email) is not None:
+            html_row = html[0]
+        else:
+            html_row = html[1]
 
         for var in vars:
             html_row = html_row.replace(f"%{var}%", row[var])
