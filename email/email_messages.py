@@ -33,17 +33,18 @@ def main(df, html_path, email_column, subject, from_mail, from_password):
     vars = re.findall(r'%(\w+)%', html)
 
     for _, row in df.iterrows():
+        html_row = html
         email = row[email_column]
 
         for var in vars:
-            html.replace(f"%{var}%", row[var])
+            html_row = html_row.replace(f"%{var}%", row[var])
 
-        enviar_email(email, html, subject, from_mail, from_password)
+        enviar_email(email, html_row, subject, from_mail, from_password)
         print(f'E-mail enviado para {email}.')
 
 # Setup:
 from_mail ="gvcode.head@gmail.com"
-from_password = 'yjvhecubcjrsqqwz'
+from_password = 'hnjfvikorpoojvmb'
 
 path_main = "data/PS 2024.2 - Inscrição - test.xlsx" #remover '- test'
 path_test = "data/PS 2024.2 - Programação - test.xlsx" #remover '- test'
