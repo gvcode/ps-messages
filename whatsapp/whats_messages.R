@@ -47,8 +47,9 @@ data_test <- read_excel(path_test, "Sheet1") %>%
 
 cc_phase1_reminder <- function(Horário, ...) { #para o argument create_content
   paste0(
-    ", tudo bem? Vim te lembrar da dinâmica da GVCode, que ocorrerá em ",
-    Horário, "."
+    ", tudo bem? Eu sou o Hugo da GVCode. Vim te lembrar da dinâmica da GVCode, que ocorrerá em ",
+    Horário, ".",
+    "O link para a ligação é https://bit.ly/DinamicaPSGVCode2024-2. Até lá!"
   )
 }
 
